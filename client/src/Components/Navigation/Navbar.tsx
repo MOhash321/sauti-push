@@ -1,640 +1,186 @@
-import { Link } from 'react-router-dom'
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { 
+  HiSearch, 
+  HiBell, 
+  HiChevronDown, 
+  HiUser, 
+  HiCog, 
+  HiLogout, 
+  HiShieldExclamation,
+  HiCheckCircle,
+  HiInformationCircle
+} from "react-icons/hi";
 
-import Button from '../UI/Button'
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
+export default function TopNavbar({ user = { name: "Abdulaziz", role: "Administrator", email: "abdulaziz@sautipush.com" } }) {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
-} from '../UI/Dropdown'
-import { FaWalkieTalkie } from 'react-icons/fa6'
+  const notificationsRef = useRef(null);
+  const profileRef = useRef(null);
 
-const navItems = [
-  {
-    label: 'Why Sauti Push',
-    items: [
-      {
-        label: 'Team Communication',
-        description: 'Connect your teams instantly',
-        path: '/team-communication',
-        icon: 'users',
-      },
-      {
-        label: 'Push-to-Talk',
-        description: 'Real-time voice communication',
-        path: '/push-to-talk',
-        icon: 'mic',
-      },
-      {
-        label: 'Dispatch',
-        description: 'Coordinate your field teams',
-        path: '/dispatch',
-        icon: 'dispatch',
-      },
-      {
-        label: 'Emergency Communication',
-        description: 'Respond when every second matters',
-        path: '/emergency',
-        icon: 'emergency',
-      },
-    ],
-  },
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setNotificationsOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  {
-    label: 'Industries',
-    items: [
-      {
-        label: 'Transportation',
-        description: 'Keep drivers and dispatch connected',
-        path: '/transportation',
-        icon: 'truck',
-      },
-      {
-        label: 'Construction',
-        description: 'Connect teams across every site',
-        path: '/construction',
-        icon: 'construction',
-      },
-      {
-        label: 'Retail',
-        description: 'Keep store teams connected',
-        path: '/retail',
-        icon: 'retail',
-      },
-      {
-        label: 'Hospitality',
-        description: 'Coordinate hospitality teams',
-        path: '/hospitality',
-        icon: 'hospitality',
-      },
-      {
-        label: 'Manufacturing',
-        description: 'Connect your operations',
-        path: '/manufacturing',
-        icon: 'manufacturing',
-      },
-      {
-        label: 'Emergency Response',
-        description: 'Coordinate critical response teams',
-        path: '/emergency',
-        icon: 'emergency',
-      },
-    ],
-  },
+  const notifications = [
+    { id: 1, title: "Emergency alert triggered", desc: "Security team dispatched to Sector 4", time: "2m ago", type: "emergency", unread: true },
+    { id: 2, title: "New team member", desc: "John Kamau joined Operations", time: "15m ago", type: "success", unread: true },
+    { id: 3, title: "System update", desc: "Push-to-talk node optimized successfully", time: "1h ago", type: "info", unread: false },
+  ];
 
-  {
-    label: 'Resources',
-    items: [
-      {
-        label: 'Resource Hub',
-        description: 'Guides, insights and useful resources',
-        path: '/resources-hub',
-        icon: 'book',
-      },
-      {
-        label: 'Customer Stories',
-        description: 'See how teams use Sauti Push',
-        path: '/customers',
-        icon: 'users',
-      },
-      {
-        label: 'Blog',
-        description: 'Insights and company updates',
-        path: '/blog',
-        icon: 'document',
-      },
-      {
-        label: 'Help Center',
-        description: 'Get help with Sauti Push',
-        path: '/help',
-        icon: 'help',
-      },
-      {
-        label: 'Developer Tools',
-        description: 'Build with Sauti Push',
-        path: '/developers',
-        icon: 'code',
-      },
-      {
-        label: 'Contact Support',
-        description: 'Talk to our support team',
-        path: '/support',
-        icon: 'support',
-      },
-    ],
-  },
-]
+  const initials = user.name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur">
-      <nav className="mx-auto flex h-15 max-w-7xl items-center justify-between px-6 lg:px-8">
-        <NavbarLogo />
-
-        <NavbarNavigation />
-
-        <NavbarActions />
-
-        <NavbarMobileButton />
-      </nav>
-    </header>
-  )
-}
-
-function NavbarLogo() {
-  return (
-    <Link
-      to="/"
-      className="flex shrink-0 items-center gap-2"
-    >
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-        <FaWalkieTalkie className="text-lg text-white" />
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white/95 px-6 backdrop-blur-md lg:px-8 font-plex">
+      
+      {/* Left: Search Bar */}
+      <div className="flex items-center gap-4 flex-1 max-w-md">
+        <div className="relative w-full">
+          <HiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search teams, channels, contacts..."
+            className="h-10 w-full rounded-xl border border-gray-200 bg-quaternary/40 pl-10 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10"
+          />
+        </div>
       </div>
 
-      <span className="font-share text-300 font-bold tracking-tight text-primary">
-        Sauti Push
-      </span>
-    </Link>
+      {/* Right: Actions & User Profile */}
+      <div className="flex items-center gap-3">
+        
+        {/* Notifications Dropdown */}
+        <div className="relative" ref={notificationsRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setNotificationsOpen(!notificationsOpen);
+              setProfileOpen(false);
+            }}
+            aria-label="View notifications"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition hover:bg-tertiary hover:text-primary"
+          >
+            <HiBell className="h-5 w-5" />
+            <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-primary ring-2 ring-white"></span>
+          </button>
+
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-gray-200 bg-white shadow-xl py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+                <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-primary">
+                  2 unread
+                </span>
+              </div>
+
+              <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                {notifications.map((n) => (
+                  <div key={n.id} className={`flex items-start gap-3 p-3 transition hover:bg-tertiary/50 ${n.unread ? 'bg-tertiary/20' : ''}`}>
+                    <div className="mt-0.5 shrink-0">
+                      {n.type === 'emergency' && <HiShieldExclamation className="h-5 w-5 text-red-500" />}
+                      {n.type === 'success' && <HiCheckCircle className="h-5 w-5 text-emerald-500" />}
+                      {n.type === 'info' && <HiInformationCircle className="h-5 w-5 text-primary" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-gray-900">{n.title}</p>
+                      <p className="text-xs text-gray-500 truncate">{n.desc}</p>
+                      <p className="mt-1 text-[10px] text-gray-400">{n.time}</p>
+                    </div>
+                    {n.unread && <span className="h-2 w-2 rounded-full bg-primary self-center"></span>}
+                  </div>
+                ))}
+              </div>
+
+              <div className="px-4 pt-3 border-t border-gray-100 text-center">
+                <button className="text-xs font-semibold text-primary hover:underline">
+                  Mark all as read
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Vertical Separator */}
+        <div className="h-6 w-[1px] bg-gray-200 mx-1"></div>
+
+        {/* Profile Menu Dropdown */}
+        <div className="relative" ref={profileRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setProfileOpen(!profileOpen);
+              setNotificationsOpen(false);
+            }}
+            className="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-tertiary"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary font-bold text-primary shadow-sm">
+              {initials}
+            </div>
+            <div className="hidden text-left sm:block">
+              <p className="text-xs font-semibold text-gray-900 leading-tight">{user.name}</p>
+              <p className="text-[11px] text-gray-500 leading-tight">{user.role}</p>
+            </div>
+            <HiChevronDown className="h-4 w-4 text-gray-400 hidden sm:block" />
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-gray-200 bg-white shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="px-4 py-3 border-b border-gray-100 sm:hidden">
+                <p className="text-xs font-semibold text-gray-900">{user.name}</p>
+                <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+              </div>
+
+              <div className="py-1">
+                <Link
+                  to="/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-tertiary hover:text-primary transition"
+                >
+                  <HiUser className="h-4 w-4 text-gray-400" />
+                  Your Profile
+                </Link>
+                <Link
+                  to="/settings"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-tertiary hover:text-primary transition"
+                >
+                  <HiCog className="h-4 w-4 text-gray-400" />
+                  Settings & Preferences
+                </Link>
+              </div>
+
+              <div className="border-t border-gray-100 pt-1">
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    // Add logout logic here
+                  }}
+                  className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition"
+                >
+                  <HiLogout className="h-4 w-4" />
+                  Sign out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </header>
   );
 }
-function NavbarNavigation() {
-  return (
-    <div className="hidden items-center gap-7 lg:flex">
-      {navItems.map((item) => (
-        <NavbarDropdown
-          key={item.label}
-          item={item}
-        />
-      ))}
-
-      <NavbarLink to="/enterprise">
-        Enterprise
-      </NavbarLink>
-
-      <NavbarLink to="/pricing">
-        Pricing
-      </NavbarLink>
-    </div>
-  )
-}
-
-function NavbarDropdown({ item }) {
-  return (
-    <Dropdown>
-      <DropdownTrigger>
-        <span className="flex items-center gap-1.5 text-sm font-medium text-gray-800 transition-colors hover:text-primary">
-          {item.label}
-
-          <ChevronDown />
-        </span>
-      </DropdownTrigger>
-
-      <DropdownContent
-        align="center"
-        className="w-[560px]"
-      >
-        <div className="grid grid-cols-2 gap-2">
-          {item.items.map((subItem) => (
-            <Link
-              key={subItem.path}
-              to={subItem.path}
-              className="block rounded-xl p-4 transition-colors hover:bg-gray-50"
-            >
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 shrink-0 text-primary">
-                  <DropdownIcon type={subItem.icon} />
-                </div>
-
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {subItem.label}
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-gray-500">
-                    {subItem.description}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </DropdownContent>
-    </Dropdown>
-  )
-}
-
-function NavbarLink({ children, to }) {
-  return (
-    <Link
-      to={to}
-      className="text-sm font-medium text-gray-800 transition-colors hover:text-primary"
-    >
-      {children}
-    </Link>
-  )
-}
-
-function NavbarActions() {
-  return (
-    <div className="hidden items-center gap-5 lg:flex">
-      <NavbarLink to="/contact">
-        Contact Us
-      </NavbarLink>
-
-      <Button to="/signup">
-        Try Now
-      </Button>
-    </div>
-  )
-}
-
-function NavbarMobileButton() {
-  return (
-    <button
-      type="button"
-      className="inline-flex items-center justify-center rounded-lg p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden"
-      aria-label="Open navigation menu"
-    >
-      <MenuIcon />
-    </button>
-  )
-}
-
-function DropdownIcon({ type }) {
-  const icons = {
-    users: <UsersIcon />,
-    mic: <MicIcon />,
-    dispatch: <DispatchIcon />,
-    emergency: <EmergencyIcon />,
-    truck: <TruckIcon />,
-    construction: <ConstructionIcon />,
-    retail: <RetailIcon />,
-    hospitality: <HospitalityIcon />,
-    manufacturing: <ManufacturingIcon />,
-    book: <BookIcon />,
-    document: <DocumentIcon />,
-    help: <HelpIcon />,
-    code: <CodeIcon />,
-    support: <SupportIcon />,
-  }
-
-  return icons[type] || null
-}
-
-function UsersIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"
-      />
-    </svg>
-  )
-}
-
-function MicIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <rect
-        x="9"
-        y="2"
-        width="6"
-        height="12"
-        rx="3"
-        strokeWidth="1.8"
-      />
-
-      <path
-        strokeLinecap="round"
-        strokeWidth="1.8"
-        d="M5 10a7 7 0 0014 0M12 17v5M8 22h8"
-      />
-    </svg>
-  )
-}
-
-function DispatchIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M4 6h16M4 12h10M4 18h16"
-      />
-
-      <circle
-        cx="18"
-        cy="12"
-        r="2"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function EmergencyIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M12 3l9 4v5c0 5.25-3.5 8.75-9 9-5.5-.25-9-3.75-9-9V7l9-4z"
-      />
-
-      <path
-        strokeLinecap="round"
-        strokeWidth="1.8"
-        d="M12 8v4M12 16h.01"
-      />
-    </svg>
-  )
-}
-
-function TruckIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"
-      />
-
-      <circle
-        cx="7"
-        cy="19"
-        r="2"
-        strokeWidth="1.8"
-      />
-
-      <circle
-        cx="18"
-        cy="19"
-        r="2"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function ConstructionIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-5h6v5"
-      />
-    </svg>
-  )
-}
-
-function RetailIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M4 9h16l-1-5H5L4 9zM6 9v11h12V9M9 13h6"
-      />
-    </svg>
-  )
-}
-
-function HospitalityIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M4 18v-6a4 4 0 014-4h8a4 4 0 014 4v6M4 15h16M7 18v2M17 18v2"
-      />
-    </svg>
-  )
-}
-
-function ManufacturingIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M3 20h18M5 20V9l5 3V7l5 3V5l4 2v13"
-      />
-    </svg>
-  )
-}
-
-function BookIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M4 5a3 3 0 013-3h10a3 3 0 013 3v16H7a3 3 0 01-3-3V5z"
-      />
-
-      <path
-        strokeLinecap="round"
-        strokeWidth="1.8"
-        d="M8 7h8M8 11h8M8 15h5"
-      />
-    </svg>
-  )
-}
-
-function DocumentIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
-      />
-
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M14 2v6h6M8 13h8M8 17h6"
-      />
-    </svg>
-  )
-}
-
-function HelpIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        strokeWidth="1.8"
-      />
-
-      <path
-        strokeLinecap="round"
-        strokeWidth="1.8"
-        d="M9.5 9a2.5 2.5 0 115 0c0 2-2.5 2-2.5 4M12 17h.01"
-      />
-    </svg>
-  )
-}
-
-function CodeIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M8 9l-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"
-      />
-    </svg>
-  )
-}
-
-function SupportIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        d="M18 10a6 6 0 10-12 0v1a3 3 0 003 3h1v-5H7M18 10v1a3 3 0 01-3 3h-1v-5h4zM18 14v2a3 3 0 01-3 3h-1"
-      />
-    </svg>
-  )
-}
-
-function ChevronDown() {
-  return (
-    <svg
-      className="h-4 w-4"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 1.04l-4.25-4.5a.75.75 0 01.02-1.06z"
-        clipRule="evenodd"
-      />
-    </svg>
-  )
-}
-
-function MenuIcon() {
-  return (
-    <svg
-      className="h-6 w-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M4 6h16M4 12h16M4 18h16"
-      />
-    </svg>
-  )
-}
-
-export default Navbar

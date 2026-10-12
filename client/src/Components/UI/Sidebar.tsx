@@ -18,7 +18,7 @@ const navigation = [
     items: [
       {
         label: "Dashboard",
-        path: "/dashboard",
+        path: "/",
         icon: FaHome,
       },
     ],
@@ -28,22 +28,22 @@ const navigation = [
     items: [
       {
         label: "Teams",
-        path: "/dashboard/teams",
+        path: "/teams",
         icon: FaUsers,
       },
       {
         label: "Channels",
-        path: "/dashboard/channels",
+        path: "/channels",
         icon: FaRadio,
       },
       {
         label: "Contacts",
-        path: "/dashboard/contacts",
+        path: "/contacts",
         icon: FaAddressBook,
       },
       {
         label: "Messages",
-        path: "/dashboard/messages",
+        path: "/messages",
         icon: FaComments,
       },
     ],
